@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>برنامج المخزن المحاسبي</title>
+  <style>
+    body { font-family: Arial, sans-serif; direction: rtl; text-align: center; }
+    table { width: 80%; margin: auto; border-collapse: collapse; }
+    th, td { border: 1px solid #333; padding: 8px; }
+    .alert { color: red; font-weight: bold; }
+    .totals { margin-top: 20px; font-size: 18px; }
+  </style>
+</head>
+<body>
+  <h2>إضافة منتجات إلى المخزن</h2>
+  
+  <form id="productForm">
+    <label>اسم المنتج: <input type="text" id="name" required></label><br><br>
+    <label>الكمية: <input type="number" id="qty" required></label><br><br>
+    <label>كلفة بالدينار: <input type="number" id="costIQD" required></label><br><br>
+    <label>كلفة بالدولار: <input type="number" id="costUSD" required></label><br><br>
+    <button type="submit">إضافة المنتج</button>
+  </form>
+  
+  <h3>قائمة المنتجات</h3>
+  <table id="inventoryTable">
+    <thead>
+      <tr>
+        <th>اسم المنتج</th>
+        <th>الكمية</th>
+        <th>الكلفة بالدينار</th>
+        <th>الكلفة بالدولار</th>
+        <th>تنبيه</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  
+  <div class="totals">
+    <p>إجمالي الكلف بالدينار: <span id="totalIQD">0</span></p>
+    <p>إجمالي الكلف بالدولار: <span id="totalUSD">0</span></p>
+  </div>
+  
+  <script>
+    const form = document.getElementById('productForm');
+    const tableBody = document.querySelector('#inventoryTable tbody');
+    const totalIQD = document.getElementById('totalIQD');
+    const totalUSD = document.getElementById('totalUSD');
+    
+    let sumIQD = 0;
+    let sumUSD = 0;
+    
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('name').value;
+      const qty = parseInt(document.getElementById('qty').value);
+      const costIQD = parseFloat(document.getElementById('costIQD').value);
+      const costUSD = parseFloat(document.getElementById('costUSD').value);
+      
+      // حساب الكلفة الإجمالية لكل منتج
+      const totalCostIQD = qty * costIQD;
+      const totalCostUSD = qty * costUSD;
+      
+      // تحديث الإجماليات
+      sumIQD += totalCostIQD;
+      sumUSD += totalCostUSD;
+      totalIQD.textContent = sumIQD;
+      totalUSD.textContent = sumUSD;
+      
+      // إنشاء صف جديد للمنتج
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${name}</td>
+        <td>${qty}</td>
+        <td>${totalCostIQD}</td>
+        <td>${totalCostUSD}</td>
+        <td>${qty < 5 ? '<span class="alert">⚠️ المخزون قليل</span>' : ''}</td>
+      `;
+      
+      tableBody.appendChild(row);
+      
+      form.reset();
+    });
+  </script>
+</body>
+</html>
